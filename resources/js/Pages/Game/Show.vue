@@ -12,9 +12,9 @@ const userInvitedId = usePage().props.auth.user;
 const form = useForm({});
 const gameId = (new URL(window.location.href)).pathname.split('/')[2];
 
-const checkDisable = (locationChecked, userId, nextTurnUserId, result) => {
-    console.log(result);
-    if(locationChecked || userId != nextTurnUserId || result == null) {
+const checkDisable = (locationChecked, userId, nextTurnUserId) => {
+    // console.log(result);
+    if(locationChecked || userId != nextTurnUserId) {
         return true
     } else {
         return false
@@ -88,7 +88,7 @@ defineProps({
                                     <button
                                         :id="location.id"
                                         @click="addItem(index, gameId, user.id, nextTurn.user_id)"
-                                        :disabled="checkDisable(location.checked, user.id, nextTurn.user_id, page.props.result)"
+                                        :disabled="checkDisable(location.checked, user.id, nextTurn.user_id)"
                                         class="board-square bg-gray-500 rounded-lg py-6 w-full"
                                     >
                                         <span v-if="location.type === 'x'" class="w-11 h-50">

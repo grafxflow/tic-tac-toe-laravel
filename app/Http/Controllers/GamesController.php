@@ -23,16 +23,16 @@ use Illuminate\Database\Eloquent\Builder;
 class GamesController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of current active games for auth user.
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $games = request()->user()->activeGames()
+        $games = $request->user()->activeGames()
         ->paginate(10)
-        ->through(function ($game) {
+        ->through(function ($game) use ($request) {
             return [
                 'id' => $game->id,
-                'opposing_player' => Turn::getOpposingPlayer(request()->user()->id, $game->id)->email,
+                'opposing_player' => Turn::getOpposingPlayer($request->user()->id, $game->id)->email,
                 'created_at' => Carbon::CreateFromFormat('Y-m-d H:i:s', $game->created_at)->format('d/m/Y H:i:s'),
             ];
         });
@@ -43,11 +43,11 @@ class GamesController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * Display a listing of finished games for auth user.
      */
-    public function finished(): Response
+    public function finished(Request $request): Response
     {
-        $games = request()->user()->finishedGames()
+        $games = $request->user()->finishedGames()
         ->paginate(10)
         ->through(function ($game) {
             return [
@@ -64,11 +64,11 @@ class GamesController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * Display a listing of users and Create New Game.
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
-        $user = request()->user();
+        $user = $request->user();
 
         $users = User::where('id', '!=', $user->id)
         ->with(['games' => function($query) use ($user) {
@@ -82,6 +82,7 @@ class GamesController extends Controller
                 'email' => $user->email,
                 'name' => $user->name,
                 'game' => $user->games->count(),
+                'games' => !empty($user->games) ? $user->games->first() : null,
             ];
         });
 
@@ -135,52 +136,30 @@ class GamesController extends Controller
         return redirect()->back();
     }
 
-    public function play()
+    public function play(Request $request)
     {
-        $turn = Turn::where('game_id', '=', request()->game_id)
-        ->where('user_id', '=', request()->user()->id)
+        $turn = Turn::where('game_id', '=', $request->game_id)
+        ->where('user_id', '=', $request->user()->id)
         ->whereNull('location')
         ->orderBy('turn_order')
         ->first();
 
-        $turn->location = request()->location;
+        $turn->location = $request->location;
         $turn->save();
 
-        $player = Turn::getOpposingPlayer(request()->user()->id, request()->game_id);
+        $player = Turn::getOpposingPlayer($request->user()->id, $request->game_id);
 
-        $locations = $this->getLocations(request()->game_id);
+        $locations = $this->getLocations($request->game_id);
 
-        // Loop through each x and o and check for the winner
-        foreach (['x', 'o'] as $type)
+        // Check to see if there is a winning or draw game with the players moves
+        $gameMoveStatus = $this->checkGameMovesStatus($locations);
+
+        if($gameMoveStatus)
         {
-            if ($locations[1]['type'] == $type && $locations[2]['type'] == $type && $locations[3]['type'] == $type
-                || $locations[4]['type'] == $type && $locations[5]['type'] == $type && $locations[6]['type'] == $type
-                || $locations[7]['type'] == $type && $locations[8]['type'] == $type && $locations[9]['type'] == $type
-                || $locations[1]['type'] == $type && $locations[4]['type'] == $type && $locations[7]['type'] == $type
-                || $locations[2]['type'] == $type && $locations[5]['type'] == $type && $locations[8]['type'] == $type
-                || $locations[3]['type'] == $type && $locations[6]['type'] == $type && $locations[9]['type'] == $type
-                || $locations[1]['type'] == $type && $locations[5]['type'] == $type && $locations[9]['type'] == $type
-                || $locations[3]['type'] == $type && $locations[5]['type'] == $type && $locations[7]['type'] == $type
-            ) {
-                // Win
-                $this->gameOver(request()->location, request()->game_id, 'win', request()->user()->id);
-            }
+            $this->gameOver($request->location, $request->game_id, 'win', $request->user()->id);
         }
 
-        // Check for draw
-        $draw = 0;
-
-        for($i = 1; $i <= 9; $i++) {
-            if($locations[$i]['checked'] == true) {
-                $draw++;
-            }
-            if ($draw == 9) {
-                // DRAW
-                $this->gameOver(request()->location, request()->game_id, 'draw', request()->user()->id);
-            }
-        }
-
-        Play::dispatch(request()->game_id, $turn->type, request()->location, $player->id, $locations);
+        Play::dispatch($request->game_id, $turn->type, $request->location, $player->id, $locations);
 
         return redirect()->back();
     }
@@ -189,11 +168,15 @@ class GamesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(): Response
+    public function show(Request $request): Response
     {
         // First detect game is already finished
         // $activeGame = Game::finishedGame(request()->game)
         // ->first();
+
+        //dd($request->gameId);
+
+        // dd($request->gameId);
 
         /*
             "id" => 10
@@ -207,57 +190,35 @@ class GamesController extends Controller
 
         // dd(request()->location);
 
-        $players = Turn::where('game_id', '=', request()->game)
+        $players = Turn::where('game_id', '=', $request->gameId)
         ->select('user_id', 'type')
         ->distinct()
         ->get();
 
-        $playerType = request()->user()->id == $players[0]->user_id ? $players[0]->type : $players[1]->type;
+        $playerType = $request->user()->id == $players[0]->user_id ? $players[0]->type : $players[1]->type;
 
-        $otherPlayerId = request()->user()->id == $players[0]->user_id ? $players[1]->user_id : $players[0]->user_id;
+        $otherPlayerId = $request->user()->id == $players[0]->user_id ? $players[1]->user_id : $players[0]->user_id;
 
-        $locations = $this->getLocations(request()->game);
+        $locations = $this->getLocations($request->gameId);
 
-        // Loop through each x and o and check for the winner
-        foreach (['x', 'o'] as $type)
+        // Check to see if there is a winning or draw game with the players moves
+        $gameMoveStatus = $this->checkGameMovesStatus($locations);
+
+        if($gameMoveStatus)
         {
-            if ($locations[1]['type'] == $type && $locations[2]['type'] == $type && $locations[3]['type'] == $type
-                || $locations[4]['type'] == $type && $locations[5]['type'] == $type && $locations[6]['type'] == $type
-                || $locations[7]['type'] == $type && $locations[8]['type'] == $type && $locations[9]['type'] == $type
-                || $locations[1]['type'] == $type && $locations[4]['type'] == $type && $locations[7]['type'] == $type
-                || $locations[2]['type'] == $type && $locations[5]['type'] == $type && $locations[8]['type'] == $type
-                || $locations[3]['type'] == $type && $locations[6]['type'] == $type && $locations[9]['type'] == $type
-                || $locations[1]['type'] == $type && $locations[5]['type'] == $type && $locations[9]['type'] == $type
-                || $locations[3]['type'] == $type && $locations[5]['type'] == $type && $locations[7]['type'] == $type
-            ) {
-                // Win
-                $this->gameOver(request()->location, request()->game, 'win', request()->user()->id);
-            }
+            $this->gameOver($request->location, $request->gameId, $gameMoveStatus, $request->user()->id);
         }
 
-        // Check for draw
-        $draw = 0;
-
-        for($i = 1; $i <= 9; $i++) {
-            if($locations[$i]['checked'] == true) {
-                $draw++;
-            }
-            if ($draw == 9) {
-                // DRAW
-                $this->gameOver(request()->location, request()->game_id, 'draw', request()->user()->id);
-            }
-        }
-
-        $nextTurn = Turn::where('game_id', '=', request()->game)
+        $nextTurn = Turn::where('game_id', '=', $request->gameId)
         ->whereNull('location')
         ->orderBy('turn_order')
         ->first();
 
-        $game = Game::find(request()->game);
+        $game = Game::find($request->gameId);
 
         return Inertia::render('Game/Show', [
-            'user' => request()->user(),
-            'id' => request()->game,
+            'user' => $request->user(),
+            'id' => $request->gameId,
             'nextTurn' => $nextTurn,
             'locations' => $locations,
             'playerType' => $playerType,
@@ -351,5 +312,39 @@ class GamesController extends Controller
         GameOver::dispatch($gameId, $userId, $result, $location, $turn->type, $userId);
 
         return redirect()->back();
+    }
+
+    public function checkGameMovesStatus($locations)
+    {
+        // Loop through each x and o and check for the winner
+        foreach (['x', 'o'] as $type)
+        {
+            if ($locations[1]['type'] == $type && $locations[2]['type'] == $type && $locations[3]['type'] == $type
+                || $locations[4]['type'] == $type && $locations[5]['type'] == $type && $locations[6]['type'] == $type
+                || $locations[7]['type'] == $type && $locations[8]['type'] == $type && $locations[9]['type'] == $type
+                || $locations[1]['type'] == $type && $locations[4]['type'] == $type && $locations[7]['type'] == $type
+                || $locations[2]['type'] == $type && $locations[5]['type'] == $type && $locations[8]['type'] == $type
+                || $locations[3]['type'] == $type && $locations[6]['type'] == $type && $locations[9]['type'] == $type
+                || $locations[1]['type'] == $type && $locations[5]['type'] == $type && $locations[9]['type'] == $type
+                || $locations[3]['type'] == $type && $locations[5]['type'] == $type && $locations[7]['type'] == $type
+            ) {
+                // Win
+                return 'win';
+            }
+        }
+
+        // Check for draw
+        $draw = 0;
+
+        for($i = 1; $i <= 9; $i++) {
+            if($locations[$i]['checked'] == true) {
+                $draw++;
+            }
+            if ($draw == 9) {
+                // DRAW
+                return 'draw';
+            }
+        }
+        return false;
     }
 }
