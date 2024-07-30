@@ -13,7 +13,6 @@ const form = useForm({});
 const gameId = (new URL(window.location.href)).pathname.split('/')[2];
 
 const checkDisable = (locationChecked, userId, nextTurnUserId) => {
-    // console.log(result);
     if(locationChecked || userId != nextTurnUserId) {
         return true
     } else {
@@ -91,7 +90,7 @@ defineProps({
                                         :disabled="checkDisable(location.checked, user.id, nextTurn.user_id)"
                                         class="board-square bg-gray-500 rounded-lg py-6 w-full"
                                     >
-                                        <span v-if="location.type === 'x'" class="w-11 h-50">
+                                        <span v-if="location.type === 'x'" class="w-11 h-16">
                                             <XOutline class="mx-auto" />
                                         </span>
                                         <span v-else-if="location.type === 'o'" class="w-11 h-16">

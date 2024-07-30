@@ -157,6 +157,8 @@ class GamesController extends Controller
         if($gameMoveStatus)
         {
             $this->gameOver($request->location, $request->game_id, 'win', $request->user()->id);
+            // Refresh Locations due to games status has changed
+            $locations = $this->getLocations($request->game_id);
         }
 
         Play::dispatch($request->game_id, $turn->type, $request->location, $player->id, $locations);
@@ -170,26 +172,6 @@ class GamesController extends Controller
      */
     public function show(Request $request): Response
     {
-        // First detect game is already finished
-        // $activeGame = Game::finishedGame(request()->game)
-        // ->first();
-
-        //dd($request->gameId);
-
-        // dd($request->gameId);
-
-        /*
-            "id" => 10
-            "winner_id" => 14
-            "player_1_user_id" => 14
-            "player_2_user_id" => 1
-            "end_date" => "2024-07-30 13:14:44"
-            "created_at" => "2024-07-30 11:09:21"
-            "updated_at" => "2024-07-30 13:14:44"
-        */
-
-        // dd(request()->location);
-
         $players = Turn::where('game_id', '=', $request->gameId)
         ->select('user_id', 'type')
         ->distinct()
@@ -236,48 +218,50 @@ class GamesController extends Controller
         ->orderBy('turn_order')
         ->get();
 
+        $gameActive = Game::whereId($gameId)->finishedGame($gameId)->count();
+
         $locations = [
             1 => [
-                "checked" => false,
-                "type" => ""
+                'checked' => !empty($gameActive) ? true : false,
+                'type' => ''
             ],
             2 => [
-                "checked" => false,
-                "type" => ""
+                'checked' => !empty($gameActive) ? true : false,
+                'type' => ''
             ],
             3 => [
-                "checked" => false,
-                "type" => ""
+                'checked' => !empty($gameActive) ? true : false,
+                'type' => ''
             ],
             4 => [
-                "checked" => false,
-                "type" => ""
+                'checked' => !empty($gameActive) ? true : false,
+                'type' => ''
             ],
             5 => [
-                "checked" => false,
-                "type" => ""
+                'checked' => !empty($gameActive) ? true : false,
+                'type' => ''
             ],
             6 => [
-                "checked" => false,
-                "type" => ""
+                'checked' => !empty($gameActive) ? true : false,
+                'type' => ''
             ],
             7 => [
-                "checked" => false,
-                "type" => ""
+                'checked' => !empty($gameActive) ? true : false,
+                'type' => ''
             ],
             8 => [
-                "checked" => false,
-                "type" => ""
+                'checked' => !empty($gameActive) ? true : false,
+                'type' => ''
             ],
             9 => [
-                "checked" => false,
-                "type" => ""
+                'checked' => !empty($gameActive) ? true : false,
+                'type' => ''
             ]
         ];
 
         foreach ($pastTurns as $pastTurn) {
-            $locations[$pastTurn->location]["checked"] = true;
-            $locations[$pastTurn->location]["type"] = $pastTurn->type;
+            $locations[$pastTurn->location]['checked'] = true;
+            $locations[$pastTurn->location]['type'] = $pastTurn->type;
         }
 
         return $locations;
