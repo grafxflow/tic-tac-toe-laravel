@@ -1,19 +1,5 @@
 # Tic-Tac-Toe Game
 
-## TEST WITH tinker
-
-```
-./vendor/bin/sail php artisan tinker
-```
-
-```
- use App\Events\NewGame;
-```
-
-```
-NewGame::dispatch('23', '45', 'Joe Bloggs');
-```
-
 ## Setup
 
 > Make sure is installed and running fist.
