@@ -2,7 +2,7 @@
 
 ## Setup
 
-> NOTE: Make sure DOCKER is installed and running fist.
+> NOTE: Make sure DOCKER is installed and running first.
 
 First install all the dependencies.
 ```
