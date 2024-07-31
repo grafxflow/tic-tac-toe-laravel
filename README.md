@@ -1,5 +1,17 @@
 # Tic-Tac-Toe Game
 
+Used:
+
+* Laravel 11
+* InertiaJs
+* Tailwind
+* [Docker App](https://www.docker.com)
+* Laravel Sail
+
+It is a Tic-Tac-Toe game between 2 registered users. Any user can create/invite another user to play a game.
+
+It also broadcasts events via WebSocket API's during gameplay which allows for both players to be updated once another player has made their move.
+
 ## Setup
 
 > NOTE: Make sure DOCKER is installed and running first.
