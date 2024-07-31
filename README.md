@@ -44,7 +44,7 @@ npm run dev
 Add 2 Users Accounts and test in 2 different browsers.
 
 ```
-./vendor/bin/sail php artisan tinker
+./vendor/bin/sail artisan tinker
 ```
 
 ```
