@@ -4,12 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Turn extends Model
 {
     use HasFactory;
-
-    // public $incrementing = false;
 
     public $fillable = [
         'user_id',
@@ -21,7 +20,7 @@ class Turn extends Model
 
     public function game(): BelongsTo
     {
-        return $this->belongsTo(Game::class, 'game_id');
+        return $this->belongsTo(Game::class);
     }
 
     public static function getOpposingPlayer($userId, $gameId)
