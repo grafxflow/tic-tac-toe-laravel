@@ -13,7 +13,6 @@ use App\Notifications\NewGameNotification;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
 use Carbon\Carbon;
@@ -22,6 +21,9 @@ use Illuminate\Database\Eloquent\Builder;
 
 class GamesController extends Controller
 {
+    const WIN = 'win';
+    const DRAW = 'draw';
+
     /**
      * Display a listing of current active games for auth user.
      */
@@ -156,7 +158,7 @@ class GamesController extends Controller
 
         if($gameMoveStatus)
         {
-            $this->gameOver($request->location, $request->game_id, 'win', $request->user()->id);
+            $this->gameOver($request->location, $request->game_id, $gameMoveStatus, $request->user()->id);
             // Refresh Locations due to games status has changed
             $locations = $this->getLocations($request->game_id);
         }
@@ -165,7 +167,6 @@ class GamesController extends Controller
 
         return redirect()->back();
     }
-
 
     /**
      * Display the specified resource.
@@ -211,7 +212,7 @@ class GamesController extends Controller
     /**
      * Find the current games tic-tac-toe selected items.
      */
-    public function getLocations($gameId)
+    public function getLocations(int $gameId)
     {
         $pastTurns = Turn::where('game_id', '=', $gameId)
         ->whereNotNull('location')
@@ -220,45 +221,15 @@ class GamesController extends Controller
 
         $gameActive = Game::whereId($gameId)->finishedGame($gameId)->count();
 
-        $locations = [
-            1 => [
-                'checked' => !empty($gameActive) ? true : false,
-                'type' => ''
-            ],
-            2 => [
-                'checked' => !empty($gameActive) ? true : false,
-                'type' => ''
-            ],
-            3 => [
-                'checked' => !empty($gameActive) ? true : false,
-                'type' => ''
-            ],
-            4 => [
-                'checked' => !empty($gameActive) ? true : false,
-                'type' => ''
-            ],
-            5 => [
-                'checked' => !empty($gameActive) ? true : false,
-                'type' => ''
-            ],
-            6 => [
-                'checked' => !empty($gameActive) ? true : false,
-                'type' => ''
-            ],
-            7 => [
-                'checked' => !empty($gameActive) ? true : false,
-                'type' => ''
-            ],
-            8 => [
-                'checked' => !empty($gameActive) ? true : false,
-                'type' => ''
-            ],
-            9 => [
-                'checked' => !empty($gameActive) ? true : false,
-                'type' => ''
-            ]
-        ];
+        $locations = [];
 
+        // Create default tic-tac-toe board locations and types
+        for($i = 1; $i <= 9; $i++) {
+            $locations[$i]['checked'] = !empty($gameActive) ? true : false;
+            $locations[$i]['type'] = '';
+        }
+
+        // Update state and type of locations
         foreach ($pastTurns as $pastTurn) {
             $locations[$pastTurn->location]['checked'] = true;
             $locations[$pastTurn->location]['type'] = $pastTurn->type;
@@ -267,8 +238,11 @@ class GamesController extends Controller
         return $locations;
     }
 
-    public function gameOver($location, $gameId, $result, $userId)
+    // $location can be string or null
+    public function gameOver($location, int $gameId, string $result, int $userId)
     {
+        // $location can be null
+
         $turn = Turn::where('game_id', '=', $gameId)
         ->where('user_id', '=', $userId)
         ->orderBy('turn_order')
@@ -298,7 +272,7 @@ class GamesController extends Controller
         return redirect()->back();
     }
 
-    public function checkGameMovesStatus($locations)
+    public function checkGameMovesStatus(array $locations)
     {
         // Loop through each x and o and check for the winner
         foreach (['x', 'o'] as $type)
@@ -312,8 +286,7 @@ class GamesController extends Controller
                 || $locations[1]['type'] == $type && $locations[5]['type'] == $type && $locations[9]['type'] == $type
                 || $locations[3]['type'] == $type && $locations[5]['type'] == $type && $locations[7]['type'] == $type
             ) {
-                // Win
-                return 'win';
+                return self::WIN;
             }
         }
 
@@ -325,10 +298,10 @@ class GamesController extends Controller
                 $draw++;
             }
             if ($draw == 9) {
-                // DRAW
-                return 'draw';
+                return self::DRAW;
             }
         }
+
         return false;
     }
 }

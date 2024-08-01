@@ -33,14 +33,6 @@ class Game extends Model
         return $this->belongsToMany(User::class);
     }
 
-
-
-
-
-
-
-
-
     public function scopeFinishedGame($query, $id)
     {
         return $query->whereNotNull('end_date');

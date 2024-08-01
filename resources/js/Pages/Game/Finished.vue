@@ -56,17 +56,21 @@ defineProps({
                                                     {{ game.id }}
                                                 </td>
                                                 <td class="py-4 px-6 whitespace-nowrap">
-                                                    {{ game.winner_player.email }}
+                                                    <span v-if="game.hasOwnProperty('winner_player') && game.winner_player !== null && game.winner_player.id == page.props.auth.user.id">
+                                                        {{ game.winner_player.email }}
+                                                    </span>
                                                 </td>
                                                 <td class="py-4 px-6 whitespace-nowrap">
                                                     {{ game.created_at }}
                                                 </td>
                                                 <td class="py-4 px-6 whitespace-nowrap">
-                                                    <div v-if="game.winner_player.id == page.props.auth.user.id" class="inline-flex items-center px-4 py-2 bg-green-500 border border-gray-300 rounded-md font-semibold text-xs text-white uppercase tracking-widest shadow-sm">
-                                                        Won
+                                                    <div v-if="game.hasOwnProperty('winner_player') && game.winner_player !== null && game.winner_player.id === page.props.auth.user.id" class="inline-flex items-center px-4 py-2 bg-green-500 border border-gray-300 rounded-md font-semibold text-xs text-white uppercase tracking-widest shadow-sm">
+                                                        <span>
+                                                            Won
+                                                        </span>
                                                     </div>
                                                     <div v-else class="inline-flex items-center px-4 py-2 bg-gray-400 border border-gray-300 rounded-md font-semibold text-xs text-white uppercase tracking-widest shadow-sm">
-                                                        Lost
+                                                        Lost or Draw
                                                     </div>
                                                 </td>
                                             </tr>

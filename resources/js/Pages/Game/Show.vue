@@ -30,7 +30,7 @@ window.Echo.channel(`game-over-channel.${gameId}.${user.id}`)
 
 window.Echo.channel(`game-channel.${gameId}.${user.id}`)
 .listen('Play', (event) => {
-    if(user.id == event.userId) {
+    if(user.id === event.userId) {
         page.props.nextTurn.user_id = event.userId;
     }
     page.props.locations = event.locations;
@@ -72,10 +72,10 @@ defineProps({
                                     The Game is a {{ page.props.result }}
                                 </span>
                                 <span v-else-if="page.props.result === 'win'">
-                                    The Game is a {{ page.props.result }}. {{ user.id == page.props.winnerId ? "You were the winner!" : "Your opponent won!" }}
+                                    The Game is a Over. {{ user.id == page.props.winnerId ? "You were the winner!" : "Your opponent won!" }}
                                 </span>
                                 <span v-else>
-                                    Game - {{ user.id == nextTurn.user_id ? "You are next" : "Waiting on your opponent..." }}
+                                    Game - {{ nextTurn !== null && user.id == nextTurn.user_id ? "You are next" : "Waiting on your opponent..." }}
                                 </span>
                             </h2>
                         </header>
@@ -86,8 +86,8 @@ defineProps({
                                 >
                                     <button
                                         :id="location.id"
-                                        @click="addItem(index, gameId, user.id, nextTurn.user_id)"
-                                        :disabled="checkDisable(location.checked, user.id, nextTurn.user_id)"
+                                        @click="addItem(index, gameId, user.id, nextTurn !== null ? nextTurn.user_id : null)"
+                                        :disabled="checkDisable(location.checked, user.id, nextTurn !== null ? nextTurn.user_id : null)"
                                         class="board-square bg-gray-500 rounded-lg py-6 w-full"
                                     >
                                         <span v-if="location.type === 'x'" class="w-11 h-16">
