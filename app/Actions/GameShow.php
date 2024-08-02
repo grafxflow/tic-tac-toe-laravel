@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Traits\GameLocationsTrait;
 use App\Traits\GameMovesStatusTrait;
 use App\Traits\GameOverTrait;
+use \stdClass;
 
 class GameShow
 {
@@ -42,11 +43,12 @@ class GameShow
         ->orderBy('turn_order')
         ->first();
 
-        return [
-            'nextTurn' => $nextTurn,
-            'locations' => $locations,
-            'playerType' => $playerType,
-            'otherPlayerId' => $otherPlayerId
-        ];
+        $game = new stdClass;
+        $game->nextTurn = $nextTurn;
+        $game->locations = $locations;
+        $game->playerType = $playerType;
+        $game->otherPlayerId = $otherPlayerId;
+
+        return $game;
     }
 }

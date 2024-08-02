@@ -85,10 +85,10 @@ class GamesController extends Controller
         return Inertia::render('Game/Show', [
             'user' => $request->user(),
             'id' => $request->gameId,
-            'nextTurn' => $game['nextTurn'],
-            'locations' => $game['locations'],
-            'playerType' => $game['playerType'],
-            'otherPlayerId' => $game['otherPlayerId']
+            'nextTurn' => $game->nextTurn,
+            'locations' => $game->locations,
+            'playerType' => $game->playerType,
+            'otherPlayerId' => $game->otherPlayerId
         ]);
     }
 }
