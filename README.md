@@ -14,7 +14,7 @@ It also broadcasts events via WebSocket API's during gameplay which allows for b
 
 ## Setup
 
-> NOTE: Make sure DOCKER is installed and running first.
+> NOTE: Make sure DOCKER is installed and running first, plus add the reverb settings have been added to the **.env**.
 
 First install all the dependencies.
 ```
