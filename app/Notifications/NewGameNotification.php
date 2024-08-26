@@ -2,12 +2,10 @@
 
 namespace App\Notifications;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 use App\Models\Game;
 use App\Models\User;
+use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Notification;
 
 class NewGameNotification extends Notification
 {
@@ -31,7 +29,7 @@ class NewGameNotification extends Notification
     {
         return [
             'database',
-            'broadcast'
+            'broadcast',
         ];
     }
 

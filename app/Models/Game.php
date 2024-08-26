@@ -4,8 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Game extends Model
 {
@@ -39,12 +39,12 @@ class Game extends Model
     public function scopeActiveGames($query)
     {
         return $query->whereNull('end_date')
-        ->whereNull('winner_id');
+            ->whereNull('winner_id');
     }
 
     public function scopeCurrentGames($query, $id)
     {
         return $query->where('player_1_user_id', $id)
-        ->orWhere('player_2_user_id', $id);
+            ->orWhere('player_2_user_id', $id);
     }
 }

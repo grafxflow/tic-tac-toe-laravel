@@ -2,9 +2,9 @@
 
 namespace App\Actions;
 
+use App\Events\Play;
 use App\Models\Turn;
 use App\Models\User;
-use App\Events\Play;
 use App\Traits\GameLocationsTrait;
 use App\Traits\GameMovesStatusTrait;
 use App\Traits\GameOverTrait;
@@ -19,10 +19,10 @@ class GamePlay
     public function handle(Request $request, User $user)
     {
         $turn = Turn::where('game_id', '=', $request->game_id)
-        ->where('user_id', '=', $user->id)
-        ->whereNull('location')
-        ->orderBy('turn_order')
-        ->first();
+            ->where('user_id', '=', $user->id)
+            ->whereNull('location')
+            ->orderBy('turn_order')
+            ->first();
 
         $turn->location = $request->location;
         $turn->save();
@@ -34,8 +34,7 @@ class GamePlay
         // Check to see if there is a winning or draw game with the players moves
         $gameMoveStatus = $this->checkGameMovesStatus($locations);
 
-        if($gameMoveStatus)
-        {
+        if ($gameMoveStatus) {
             $this->gameOver($request->location, $request->game_id, $gameMoveStatus, $user->id);
             // Refresh Locations due to games status has changed
             $locations = $this->getLocations($request->game_id);

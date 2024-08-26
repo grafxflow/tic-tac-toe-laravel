@@ -4,21 +4,26 @@ namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 class GameOver implements ShouldBroadcast
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
 
     public $result;
+
     public $gameId;
+
     public $userId;
+
     public $type;
+
     public $location;
+
     public $winnerId;
 
     /**
@@ -42,7 +47,7 @@ class GameOver implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('game-over-channel.' . $this->gameId . '.' . $this->userId),
+            new Channel('game-over-channel.'.$this->gameId.'.'.$this->userId),
         ];
     }
 }

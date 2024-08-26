@@ -26,10 +26,10 @@ class Turn extends Model
     public static function getOpposingPlayer($userId, $gameId)
     {
         $turn = Turn::where('game_id', '=', $gameId)
-        ->select('user_id', 'type')
-        ->where('user_id', '!=', $userId)
-        ->distinct()
-        ->first();
+            ->select('user_id', 'type')
+            ->where('user_id', '!=', $userId)
+            ->distinct()
+            ->first();
 
         return User::find($turn->user_id);
     }

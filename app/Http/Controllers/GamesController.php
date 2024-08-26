@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Http\Request;
+use App\Actions\GamePlay;
+use App\Actions\GamesActive;
+use App\Actions\GamesFinished;
+use App\Actions\GameShow;
+use App\Actions\GameStore;
+use App\Actions\GamesUsers;
 use App\Http\Requests\GameStoreRequest;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use App\Actions\GameStore;
-use App\Actions\GamePlay;
-use App\Actions\GamesUsers;
-use App\Actions\GamesFinished;
-use App\Actions\GamesActive;
-use App\Actions\GameShow;
 
 class GamesController extends Controller
 {
@@ -88,7 +87,7 @@ class GamesController extends Controller
             'nextTurn' => $game->nextTurn,
             'locations' => $game->locations,
             'playerType' => $game->playerType,
-            'otherPlayerId' => $game->otherPlayerId
+            'otherPlayerId' => $game->otherPlayerId,
         ]);
     }
 }

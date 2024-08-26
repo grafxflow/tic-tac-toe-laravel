@@ -10,17 +10,17 @@ trait GameLocationsTrait
     public function getLocations(int $gameId)
     {
         $pastTurns = Turn::where('game_id', '=', $gameId)
-        ->whereNotNull('location')
-        ->orderBy('turn_order')
-        ->get();
+            ->whereNotNull('location')
+            ->orderBy('turn_order')
+            ->get();
 
         $gameActive = Game::whereId($gameId)->finishedGame($gameId)->count();
 
         $locations = [];
 
         // Create default tic-tac-toe board locations and types
-        for($i = 1; $i <= 9; $i++) {
-            $locations[$i]['checked'] = !empty($gameActive) ? true : false;
+        for ($i = 1; $i <= 9; $i++) {
+            $locations[$i]['checked'] = ! empty($gameActive) ? true : false;
             $locations[$i]['type'] = '';
         }
 
