@@ -1,6 +1,6 @@
 {
     "name": "tic-tac-toe-laravel",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "The front-end for a tic-tac-toe laravel/vuejs game.",
     "private": true,
     "type": "module",
