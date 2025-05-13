@@ -44,7 +44,7 @@ class Play implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('game-channel.'.$this->gameId.'.'.$this->userId),
+            new Channel('game-channel.' . $this->gameId . '.' . $this->userId),
         ];
     }
 }

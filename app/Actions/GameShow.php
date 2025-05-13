@@ -24,9 +24,9 @@ class GameShow
             ->distinct()
             ->get();
 
-        $playerType = $request->user()->id == $players[0]->user_id ? $players[0]->type : $players[1]->type;
+        $playerType = $request->user()->id === $players[0]->user_id ? $players[0]->type : $players[1]->type;
 
-        $otherPlayerId = $request->user()->id == $players[0]->user_id ? $players[1]->user_id : $players[0]->user_id;
+        $otherPlayerId = $request->user()->id === $players[0]->user_id ? $players[1]->user_id : $players[0]->user_id;
 
         $locations = $this->getLocations($request->gameId);
 
@@ -42,7 +42,7 @@ class GameShow
             ->orderBy('turn_order')
             ->first();
 
-        $game = new stdClass;
+        $game = new stdClass();
         $game->nextTurn = $nextTurn;
         $game->locations = $locations;
         $game->playerType = $playerType;

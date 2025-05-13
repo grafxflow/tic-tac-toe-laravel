@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 
 class GameStore
 {
-    public function handle(Request $request, User $user)
+    public function handle(Request $request, User $user): void
     {
         // Check if game has already been created
         $newGame = Game::firstOrCreate(
@@ -19,7 +19,7 @@ class GameStore
                 'player_1_user_id' => $request->user_id,
                 'player_2_user_id' => $request->user_invited_id,
                 'end_date' => null,
-            ]
+            ],
         );
 
         if ($newGame) {
@@ -31,7 +31,7 @@ class GameStore
                         'turn_order' => $i,
                         'type' => $i % 2 ? 'x' : 'o',
                         'user_id' => $i % 2 ? $request->user_id : $request->user_invited_id,
-                    ]
+                    ],
                 );
             }
 

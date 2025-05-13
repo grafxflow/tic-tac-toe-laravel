@@ -35,7 +35,7 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
             ],
             // Lazily...
-            'userNewGamesNotificationsCount' => fn () => $request->user()
+            'userNewGamesNotificationsCount' => fn() => $request->user()
             ? $request->user()->activeGames()->count()
             : 0,
         ]);

@@ -10,7 +10,7 @@ class GamesUsers
     public function handle(Request $request, User $user)
     {
         $users = User::where('id', '!=', $user->id)
-            ->with(['games' => function ($query) use ($user) {
+            ->with(['games' => function ($query) use ($user): void {
                 $query->activeGames()
                     ->currentGames($user->id);
             }])

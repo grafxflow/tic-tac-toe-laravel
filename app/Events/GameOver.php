@@ -47,7 +47,7 @@ class GameOver implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('game-over-channel.'.$this->gameId.'.'.$this->userId),
+            new Channel('game-over-channel.' . $this->gameId . '.' . $this->userId),
         ];
     }
 }

@@ -9,16 +9,10 @@ class PlayListener
     /**
      * Create the event listener.
      */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct() {}
 
     /**
      * Handle the event.
      */
-    public function handle(Play $event): void
-    {
-        //
-    }
+    public function handle(Play $event): void {}
 }

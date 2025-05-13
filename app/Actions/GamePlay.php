@@ -16,7 +16,7 @@ class GamePlay
     use GameMovesStatusTrait;
     use GameOverTrait;
 
-    public function handle(Request $request, User $user)
+    public function handle(Request $request, User $user): void
     {
         $turn = Turn::where('game_id', '=', $request->game_id)
             ->where('user_id', '=', $user->id)

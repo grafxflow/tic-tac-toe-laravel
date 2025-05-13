@@ -9,7 +9,7 @@ use Carbon\Carbon;
 
 trait GameOverTrait
 {
-    public function gameOver($location, int $gameId, string $result, int $userId)
+    public function gameOver($location, int $gameId, string $result, int $userId): void
     {
         $turn = Turn::where('game_id', '=', $gameId)
             ->where('user_id', '=', $userId)
@@ -18,20 +18,20 @@ trait GameOverTrait
 
         $player = Turn::getOpposingPlayer($userId, $gameId);
 
-        if ($result == 'win') {
+        if ('win' === $result) {
             Game::where('id', $gameId)
                 ->update(
                     [
                         'winner_id' => $userId,
                         'end_date' => Carbon::now()->toDateTimeString(),
-                    ]
+                    ],
                 );
         } else {
             Game::where('id', $gameId)
                 ->update(
                     [
                         'end_date' => Carbon::now()->toDateTimeString(),
-                    ]
+                    ],
                 );
         }
 

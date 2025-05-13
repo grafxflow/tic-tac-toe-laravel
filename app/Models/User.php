@@ -34,19 +34,6 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
-
     public function games(): BelongsToMany
     {
         return $this->belongsToMany(Game::class);
@@ -60,5 +47,18 @@ class User extends Authenticatable
     public function finishedGames(): BelongsToMany
     {
         return $this->belongsToMany(Game::class)->whereNotNull('end_date');
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
     }
 }

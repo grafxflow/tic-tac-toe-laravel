@@ -18,11 +18,6 @@ class Turn extends Model
         'turn_order',
     ];
 
-    public function game(): BelongsTo
-    {
-        return $this->belongsTo(Game::class);
-    }
-
     public static function getOpposingPlayer($userId, $gameId)
     {
         $turn = Turn::where('game_id', '=', $gameId)
@@ -32,5 +27,10 @@ class Turn extends Model
             ->first();
 
         return User::find($turn->user_id);
+    }
+
+    public function game(): BelongsTo
+    {
+        return $this->belongsTo(Game::class);
     }
 }
